@@ -30,4 +30,4 @@ jobs:
         context: "."
         push: true
         # List of tags
-        tags: docker.pkg.github.com/${{ github.repository_owner }}/openai-api-server:${{ steps.date.outputs.date }}
+        tags: docker.pkg.github.com/${{ github.repository_owner | toLower }}/openai-api-server:${{ steps.date.outputs.date }}
