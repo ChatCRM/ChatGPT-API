@@ -3,6 +3,7 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
+    tags: [ "*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -22,7 +23,13 @@ jobs:
         password: ${{ secrets.GHCR_TOKEN }}
     - name: Generate Docker tag
       id: docker_tag
-      run: echo "::set-output name=tag::$(echo 'docker.pkg.github.com/${{ github.repository }}/openai-api-server:latest' | awk '{print tolower($0)}')"
+      run: |
+        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+          TAG_NAME="latest"
+        else
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+        fi
+        echo "::set-output name=tag::$(echo "docker.pkg.github.com/${{ github.repository }}/openai-api-server:$TAG_NAME" | awk '{print tolower($0)}')"
     - name: Build and push Docker images
       uses: docker/build-push-action@v2
       with:
